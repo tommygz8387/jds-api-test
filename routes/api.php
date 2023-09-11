@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NewsController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +16,10 @@ use App\Http\Controllers\NewsController;
 |
 */
 
-Route::controller(UserController::class)->group(function () {
+Route::controller(UserController::class)->prefix('users')->group(function () {
     // Route::get('/orders/{id}', 'show');
-    Route::post('/users', 'register');
+    Route::post('register', 'register');
+    Route::post('login', 'login');
 });
 Route::middleware('auth:api')->group(function () {
     // Your protected API routes here
