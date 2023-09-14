@@ -1,3 +1,13 @@
+POST http://localhost:8000/api/users/register
+Content-Type: application/json
+
+{
+    "name": "test",
+    "email": "test@mail.com",
+    "password": "password"
+}
+
+###
 POST http://localhost:8000/api/users/login
 Content-Type: application/json
 
@@ -5,3 +15,6 @@ Content-Type: application/json
     "email": "toms@mail.com",
     "password": "password"
 }
+
+###
+GET http://localhost:8000/api/users/current

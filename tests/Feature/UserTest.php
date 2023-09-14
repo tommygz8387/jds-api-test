@@ -108,4 +108,18 @@ class UserTest extends TestCase
             ]
         ]);
     }
+    
+    public function testGetUserSuccess(): void
+    {
+        $this->seed(UserSeeder::class);
+        $this->get('/api/users/current',[
+            'Authorization'=>'test'
+        ])->assertStatus(200)
+        ->assertJson([
+            'data'=>[
+                'email'=>'toms@mail.com',
+                'name'=>'toms',
+            ]
+        ]);
+    }
 }

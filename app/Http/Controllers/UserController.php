@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
@@ -55,6 +56,19 @@ class UserController extends Controller
 
         return new UserResource($user);
     }
+    public function getUser(Request $request): UserResource
+    {
+        $user = Auth::user();
+        return new UserResource($user);
+    }
+
+    public function getUserById($id): UserResource
+    {
+        $user = User::find($id);
+        return new UserResource($user);
+    }
+
+
 
     /**
      * Display a listing of the resource.
