@@ -11,7 +11,7 @@ class NewsCreateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class NewsCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title'=> 'required|max:100',
+            'photo'=> 'required|max:100',
+            'content'=> 'required|min:20',
+            'user_id'=> 'required|integer',
         ];
     }
 }

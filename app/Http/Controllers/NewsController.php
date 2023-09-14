@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\NewsResource;
 use App\Models\News;
 use Illuminate\Http\Request;
+use App\Http\Resources\NewsResource;
+use App\Http\Requests\NewsCreateRequest;
 
 class NewsController extends Controller
 {
@@ -13,24 +14,18 @@ class NewsController extends Controller
      */
     public function index()
     {
-        $news = News::paginate(10);
+        $news = News::with('author')->paginate(10);
         return NewsResource::collection($news);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(NewsCreateRequest $request) : NewsResource
     {
-        //
+        $data = $request->validated();
+        $news = News::create($data);
+        return new NewsResource($news);
     }
 
     /**
