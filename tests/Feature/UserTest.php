@@ -4,10 +4,7 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Models\User;
-use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\UserSeeder;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function PHPUnit\Framework\assertNotNull;
 
@@ -119,6 +116,132 @@ class UserTest extends TestCase
             'data'=>[
                 'email'=>'toms@mail.com',
                 'name'=>'toms',
+            ]
+        ]);
+    }
+
+    public function testGetUserUnauthorized(): void
+    {
+        $this->seed(UserSeeder::class);
+        $this->get('/api/users/current')
+        ->assertStatus(401)
+        ->assertJson([
+            'errors'=>[
+                'message'=>[
+                    'unauthorized'
+                    ]
+            ]
+        ]);
+    }
+
+    public function testGetUserInvalidToken(): void
+    {
+        $this->seed(UserSeeder::class);
+        $this->get('/api/users/current',[
+            'Authorization'=>'salah'
+        ])
+        ->assertStatus(401)
+        ->assertJson([
+            'errors'=>[
+                'message'=>[
+                    'unauthorized'
+                    ]
+            ]
+        ]);
+    }
+
+    public function testUpdatePasswordSuccess(): void
+    {
+        $this->seed(UserSeeder::class);
+        $oldUser = User::where('email','toms@mail.com')->first();
+
+        $this->patch('/api/users/current',[
+            'password'=>'baru'
+        ],[
+            'Authorization'=>'test'
+        ])
+        ->assertStatus(200)
+        ->assertJson([
+            'data'=>[
+                'email'=>'toms@mail.com',
+                'name'=>'toms',
+            ]
+        ]);
+
+        $newUser = User::where('email','toms@mail.com')->first();
+        self::assertNotEquals($oldUser->password,$newUser->password);
+    }
+
+    public function testUpdateNameSuccess(): void
+    {
+        $this->seed(UserSeeder::class);
+        $oldUser = User::where('email','toms@mail.com')->first();
+
+        $this->patch('/api/users/current',[
+            'name'=>'namabaru'
+        ],[
+            'Authorization'=>'test'
+        ])
+        ->assertStatus(200)
+        ->assertJson([
+            'data'=>[
+                'email'=>'toms@mail.com',
+                'name'=>'namabaru',
+            ]
+        ]);
+
+        $newUser = User::where('email','toms@mail.com')->first();
+        self::assertNotEquals($oldUser->name,$newUser->name);
+    }
+
+    public function testUpdateFailed(): void
+    {
+        $this->seed(UserSeeder::class);
+
+        $this->patch('/api/users/current',[
+            'role'=>'asdasd'
+        ],[
+            'Authorization'=>'test'
+        ])
+        ->assertStatus(400)
+        ->assertJson([
+            'errors'=>[
+                'role'=>[
+                    "The selected role is invalid."
+                ]
+            ]
+        ]);
+    }
+
+    public function testLogoutSuccess(): void
+    {
+        $this->seed(UserSeeder::class);
+
+        $this->delete('/api/users/logout', headers: [
+            'Authorization'=>'test'
+        ])
+        ->assertStatus(200)
+        ->assertJson([
+            'data'=> true
+        ]);
+
+        $user = User::where('email','toms@mail.com')->first();
+        self::assertNull($user->remember_token);
+    }
+
+    public function testLogoutFailed(): void
+    {
+        $this->seed(UserSeeder::class);
+
+        $this->delete('/api/users/logout', headers: [
+            'Authorization'=>'salah'
+        ])
+        ->assertStatus(401)
+        ->assertJson([
+            'errors'=>[
+                'message'=>[
+                    'unauthorized'
+                    ]
             ]
         ]);
     }

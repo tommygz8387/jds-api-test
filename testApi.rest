@@ -18,3 +18,16 @@ Content-Type: application/json
 
 ###
 GET http://localhost:8000/api/users/current
+
+###
+PATCH http://localhost:8000/api/users/current
+Content-Type: application/json
+
+{
+    "email": "toms@mail.com",
+    "password": "password2"
+}
+
+###
+DELETE http://localhost:8000/api/users/logout
+Authorization: Bearer 8b8be598-9902-492b-bec7-3648929c672e

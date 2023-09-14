@@ -16,7 +16,8 @@ class UserSeeder extends Seeder
         \App\Models\User::create([
             'name' => 'toms',
             'email' => 'toms@mail.com',
-            'password' => Hash::make('password')
+            'password' => Hash::make('password'),
+            'remember_token' => 'test'
         ]);
     }
 }

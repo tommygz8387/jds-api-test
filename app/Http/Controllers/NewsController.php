@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\NewsResource;
 use App\Models\News;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,8 @@ class NewsController extends Controller
      */
     public function index()
     {
-        //
+        $news = News::paginate(10);
+        return NewsResource::collection($news);
     }
 
     /**

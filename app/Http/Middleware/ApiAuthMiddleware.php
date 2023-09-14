@@ -19,13 +19,19 @@ class ApiAuthMiddleware
     {
         $token = $request->header('Authorization');
         $authenticate = true;
-
+        
         if (!$token) {
             $authenticate = false;
         }
-
+        $token = str_replace('Bearer ', '', $token);
         $user = User::where('remember_token',$token)->first();
-        auth()->login($user);
+        
+        if (!$user) {
+            $authenticate = false;
+        }else{
+            auth()->login($user);
+        }
+        
 
         if ($authenticate) {
             return $next($request);

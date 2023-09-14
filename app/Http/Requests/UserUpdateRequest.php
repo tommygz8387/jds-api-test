@@ -7,14 +7,14 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UserRegisterRequest extends FormRequest
+class UserUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user() != null;
     }
 
     /**
@@ -25,10 +25,10 @@ class UserRegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'=> 'required|max:100',
-            'email'=> 'required|unique:users|max:100',
-            'password'=> 'required|max:100',
-            'role'=> ['required',Rule::in(['admin', 'member'])],
+            'email'=> 'nullable|max:100',
+            'name'=> 'nullable|max:100',
+            'password'=> 'nullable|max:100',
+            'role'=> ['nullable',Rule::in(['admin', 'member'])],
         ];
     }
 

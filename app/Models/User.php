@@ -3,11 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Validation\Rule;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
@@ -45,6 +46,21 @@ class User extends Authenticatable
     public function comments() : HasMany
     {
         return $this->hasMany(Comment::class,'user_id','id');
+    }
+
+    public static function getRoleEnumValues()
+    {
+        return ['admin', 'member'];
+    }
+
+    public static function rules()
+    {
+        return [
+            'role' => [
+                'required',
+                Rule::in(self::getRoleEnumValues()), // Validasi bahwa nilai harus ada dalam enum
+            ],
+        ];
     }
 
     /**

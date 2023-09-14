@@ -22,13 +22,13 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::post('login', 'login');
 });
 
-Route::middleware('auth:api')->controller(UserController::class)
+Route::middleware(ApiAuthMiddleware::class)->controller(UserController::class)
 ->prefix('users')->group(function () {
     Route::get('current', 'getUser');
     Route::get('current/{id}', 'getUserById');
+    Route::patch('current', 'update');
+    Route::delete('logout', 'logout');
 });
-
-Route::middleware('auth:api')->group(function () {
-    // Your protected API routes here
-    Route::resource('news', NewsController::class);
+Route::middleware(ApiAuthMiddleware::class)->group(function () {
+    Route::apiResource('current', 'getUser');
 });
