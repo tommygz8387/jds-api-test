@@ -19,7 +19,16 @@ class RoleMiddleware
         $user = Auth::user();
         $role = $user->role;
 
-        dd($role);
+        if ($role!=='admin') {
+            return response()->json([
+                'errors'=>[
+                    'message'=>[
+                        'unauthorized'
+                    ]
+                ]
+            ])->setStatusCode(401);
+        }
+        
         return $next($request);
     }
 }

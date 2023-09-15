@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class News extends Model
 {
+    use HasFactory;
     protected $table = "news";
     protected $primaryKey = "id";
     protected $fillable = [
