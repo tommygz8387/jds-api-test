@@ -16,8 +16,6 @@ return new class extends Migration
             $table->text('content');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('news_id');
-            $table->foreignId('parent_id')->nullable()
-            ->constrained('comments')->onUpdate('cascade');
             $table->timestamps();
 
             $table->foreign('user_id')->on('users')->references('id');

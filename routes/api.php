@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\ApiAuthMiddleware;
+use App\Http\Controllers\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,8 @@ Route::middleware(ApiAuthMiddleware::class)->controller(UserController::class)
     Route::delete('logout', 'logout');
 });
 Route::middleware(ApiAuthMiddleware::class)->group(function () {
+    Route::get('news/withComments', [NewsController::class,'getNewsWithComments']);
     Route::get('news/logged', [NewsController::class,'getMyNews']);
     Route::apiResource('news', NewsController::class);
+    Route::apiResource('comment', CommentController::class);
 });

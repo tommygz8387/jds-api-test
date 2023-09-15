@@ -16,11 +16,11 @@ class Comment extends Model
         'news_id',
     ];
 
-    public function user() :BelongsTo
+    public function author() :BelongsTo
     {
         return $this->belongsTo(User::class,'user_id','id');
     }
-    public function news() :BelongsTo
+    public function posted() :BelongsTo
     {
         return $this->belongsTo(News::class,'news_id','id');
     }

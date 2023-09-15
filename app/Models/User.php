@@ -38,12 +38,12 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    public function news() : HasMany
+    public function mypost() : HasMany
     {
         return $this->hasMany(News::class,'user_id','id');
     }
 
-    public function comments() : HasMany
+    public function mycomments() : HasMany
     {
         return $this->hasMany(Comment::class,'user_id','id');
     }

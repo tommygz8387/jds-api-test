@@ -24,6 +24,15 @@ class NewsController extends Controller
     }
 
     /**
+     * Display a listing of the news with comments.
+     */
+    public function getNewsWithComments()
+    {
+        $news = News::with(['author','comments'])->get();
+        return response()->json($news);
+    }
+
+    /**
      * Display a listing of the my resource.
      */
     public function getMyNews()
