@@ -16,9 +16,9 @@ class NewsResource extends JsonResource
     {
         return [
             'news_id' => $this->id,
-            'news_title' => $this->title,
-            'news_photo' => $this->photo,
-            'news_content' => $this->content,
+            'title' => $this->title,
+            'photo' => $this->photo,
+            'content' => $this->content,
             'author' => $this->whenLoaded('author', function () {
                 return new UserResource($this->author);
             }),

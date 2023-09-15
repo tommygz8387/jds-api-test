@@ -26,7 +26,7 @@ class UserRegisterRequest extends FormRequest
     {
         return [
             'name'=> 'required|max:100',
-            'email'=> 'required|unique:users|max:100',
+            'email'=> 'required|unique:users|max:100|email',
             'password'=> 'required|max:100',
             'role'=> ['required',Rule::in(['admin', 'member'])],
         ];

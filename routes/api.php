@@ -30,5 +30,6 @@ Route::middleware(ApiAuthMiddleware::class)->controller(UserController::class)
     Route::delete('logout', 'logout');
 });
 Route::middleware(ApiAuthMiddleware::class)->group(function () {
+    Route::get('news/logged', [NewsController::class,'getMyNews']);
     Route::apiResource('news', NewsController::class);
 });
