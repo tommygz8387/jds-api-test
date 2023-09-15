@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
-use Illuminate\Http\Request;
+use App\Services\CommentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\CommentResource;
@@ -12,6 +12,12 @@ use App\Http\Requests\CommentUpdateRequest;
 
 class CommentController extends Controller
 {
+    private $commentService;
+
+    public function __construct(CommentService $commentService)
+    {
+        $this->commentService = $commentService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -29,10 +35,9 @@ class CommentController extends Controller
     public function store(CommentCreateRequest $request)
     {
         $data = $request->validated();
-        $author = Auth::user();
-        $data['user_id'] = $author->id;
+        
+        $comment = $this->commentService->store($data);
 
-        $comment = Comment::create($data);
         return new CommentResource($comment);
     }
 
@@ -61,22 +66,9 @@ class CommentController extends Controller
     public function update(CommentUpdateRequest $request, int $id) : JsonResponse
     {
         $data = $request->validated();
-        $user = Auth::user();
-        $data = array_filter($data);
-        $comment = Comment::where('id',$id)->where('user_id',$user->id)->first();
-        if (!$comment) {
-            return response()->json([
-                'errors' => [
-                    'message'=>[
-                        'comment not found'
-                    ]
-                ]
-            ])->setStatusCode(404);
-        }
+        
+        $update = $this->commentService->update($data,$id);
 
-        $data['news_id'] = $comment->news_id;
-
-        $update = Comment::updateOrCreate(['id'=>$id],$data);
         return (new CommentResource($update))->response()->setStatusCode(200);
     }
 

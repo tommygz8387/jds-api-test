@@ -3,17 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\News;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
+use App\Services\NewsService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\NewsResource;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use App\Http\Requests\NewsCreateRequest;
 use App\Http\Requests\NewsUpdateRequest;
 
 class NewsController extends Controller
 {
+    private $newsService;
+
+    public function __construct(NewsService $newsService)
+    {
+        $this->newsService = $newsService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -56,16 +60,9 @@ class NewsController extends Controller
     public function store(NewsCreateRequest $request) : NewsResource
     {
         $data = $request->validated();
-        $author = Auth::user();
-        $data['user_id'] = $author->id;
+        
+        $news = $this->newsService->store($data);
 
-        $photo = $data['photo'];
-        $str = Str::random(12);
-        $getExtension = $photo->getClientOriginalExtension();
-        $namaFile = $str.'.'.$getExtension;
-        $photo->move('NewsPhoto', $namaFile);
-
-        $news = News::create(array_merge($data, ['photo' => $namaFile]));
         return new NewsResource($news);
     }
 
@@ -93,41 +90,8 @@ class NewsController extends Controller
     public function update(NewsUpdateRequest $request, int $id) : JsonResponse
     {
         $data = $request->validated();
-        $user = Auth::user();
-        $data = array_filter($data);
-        $news = News::where('id',$id)->where('user_id',$user->id)->first();
-        if (!$news) {
-            return response()->json([
-                'errors' => [
-                    'message'=>[
-                        'news not found'
-                    ]
-                ]
-            ])->setStatusCode(404);
-        }
-
-        if (isset($data['photo'])) {
-            if ($data['photo']->hasFile('NewsPhoto')) {
-                $path = 'NewsPhoto/' . $news->photo;
-                if (File::exists($path)) {
-                    File::delete($path);
-                }
-    
-                $photo = $data['photo'];
-                $str = Str::random(12);
-                $getExtension = $photo->getClientOriginalExtension();
-                $namaFile = $str.'.'.$getExtension;
-                $photo->move('NewsPhoto', $namaFile);
-            }else{
-                $namaFile = $news->photo;
-            }
-            $input = array_merge($data,['NewsPhoto'=>$namaFile]);
-        }else{
-            $input = $data;
-        }
-
-
-        $update = News::updateOrCreate(['id'=>$id],$input);
+        
+        $update = $this->newsService->update($data,$id);
 
         return (new NewsResource($update))->response()->setStatusCode(200);
     }
