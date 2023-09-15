@@ -33,9 +33,6 @@ class AuthController extends Controller
     public function login(UserLoginRequest $request) : UserResource {
         $data = $request->validated();
 
-        $email = $data['email'];
-        $password = $data['password'];
-
         $user = $this->authService->login($data);
 
         return new UserResource($user);
