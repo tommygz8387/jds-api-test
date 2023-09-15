@@ -4,13 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Services\UserService;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserUpdateRequest;
 
 class UserController extends Controller
-{    public function getUser(Request $request): UserResource
+{   
+    private $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+    public function getUser(Request $request): UserResource
     {
         $user = Auth::user();
         return new UserResource($user);
@@ -28,25 +35,8 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request) : UserResource
     {
         $data = $request->validated();
-        $user = Auth::user();
-        $dataToUpdate = [];
-
-        if (isset($data['name'])) {
-            $dataToUpdate['name'] = $data['name'];
-        }
-
-        if (isset($data['role'])) {
-            $dataToUpdate['role'] = $data['role'];
-        }
-
-        if (isset($data['password'])) {
-            $dataToUpdate['password'] = Hash::make($data['password']);
-        }
-
-        if (!empty($dataToUpdate)) {
-            $user->update($dataToUpdate);
-        }
-
+        
+        $user = $this->userService->update($data);
 
         return new UserResource($user);
     }

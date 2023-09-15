@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
@@ -15,22 +15,16 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class AuthController extends Controller
 {
+    private $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
     public function register(UserRegisterRequest $request) : JsonResponse {
         $data = $request->validated();
 
-        if (User::where('email',$data['email'])->exists()) {
-            throw new HttpResponseException(response([
-                'errors'=> [
-                    'email'=>[
-                        'email already registered'
-                    ]
-                ]
-                    ],400));
-        }
-
-        $user = new User($data);
-        $user->password = Hash::make($data['password']);
-        $user->save();
+        $user = $this->authService->register($data);
 
         return (new UserResource($user))->response()->setStatusCode(201);
     }
@@ -39,19 +33,10 @@ class AuthController extends Controller
     public function login(UserLoginRequest $request) : UserResource {
         $data = $request->validated();
 
-        $user = User::where('email', $data['email'])->first();
-        if (!$user || !Hash::check($data['password'], $user->password)) {
-            throw new HttpResponseException(response([
-                'errors'=> [
-                    'message'=>[
-                        'invalid email or password'
-                    ]
-                ]
-                    ],401));
-        }
+        $email = $data['email'];
+        $password = $data['password'];
 
-        $user->remember_token = Str::uuid()->toString();
-        $user->save();
+        $user = $this->authService->login($data);
 
         return new UserResource($user);
     }
