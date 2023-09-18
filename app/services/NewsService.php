@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use App\Models\News;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -14,11 +15,11 @@ class NewsService
     {
         $author = Auth::user();
         $data['user_id'] = $author->id;
-
         $photo = $data['photo'];
-        $str = Str::random(12);
+        $str = Carbon::now()->format('Ymd_His');
+
         $getExtension = $photo->getClientOriginalExtension();
-        $namaFile = $str.'.'.$getExtension;
+        $namaFile = $author->id.'.'.$str.'.'.$getExtension;
         $photo->move('NewsPhoto', $namaFile);
 
         $news = News::create(array_merge($data, ['photo' => $namaFile]));
@@ -31,14 +32,11 @@ class NewsService
         $user = Auth::user();
         $data = array_filter($data);
         $news = News::where('id',$id)->where('user_id',$user->id)->first();
-        if (!$news) {
-            return response()->json([
-                'errors' => [
-                    'message'=>[
-                        'news not found'
-                    ]
-                ]
-            ])->setStatusCode(404);
+        // dd($news);
+        if ($news==null) {
+            return 'ok';
+        // }else{
+        //     return 'ga oke';
         }
 
         if (isset($data['photo'])) {

@@ -8,6 +8,7 @@ use App\Services\UserService;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\UserUpdateRequest;
+use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {   
@@ -20,12 +21,6 @@ class UserController extends Controller
     public function getUser(Request $request): UserResource
     {
         $user = Auth::user();
-        return new UserResource($user);
-    }
-
-    public function getUserById($id): UserResource
-    {
-        $user = User::find($id);
         return new UserResource($user);
     }
 

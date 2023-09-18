@@ -23,31 +23,13 @@ class NewsController extends Controller
      */
     public function index()
     {
-        $news = News::with('author')->paginate(10);
-        return NewsResource::collection($news);
-    }
-
-    /**
-     * Display a listing of the news with comments.
-     */
-    public function getNewsWithComments()
-    {
-        $news = News::with(['author','comments'])->get();
-        return response()->json($news);
-    }
-
-    /**
-     * Display a listing of the my resource.
-     */
-    public function getMyNews()
-    {
         $user = Auth::user();
-        $news = News::where('user_id',$user->id)->get();
+        $news = News::where('user_id',$user->id)->paginate(10);
         
         if ($news->count()==0) {
             return response()->json([
                 'data' => [
-                    'news not found'
+                    'no news posted'
                 ]
             ])->setStatusCode(404);
         }
@@ -71,7 +53,8 @@ class NewsController extends Controller
      */
     public function show(String $id) : JsonResponse
     {
-        $news = News::with('author')->find($id);
+        $user = Auth::user();
+        $news = News::where('user_id',$user->id)->with('comments')->find($id);
         if (!$news) {
             return response()->json([
                 'errors' => [
@@ -87,7 +70,7 @@ class NewsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(NewsUpdateRequest $request, int $id) : JsonResponse
+    public function update(NewsUpdateRequest $request, String $id) : JsonResponse
     {
         $data = $request->validated();
         
@@ -99,10 +82,10 @@ class NewsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id) : JsonResponse
+    public function destroy(String $id) : JsonResponse
     {
         $user = Auth::user();
-        $news = News::where('id',$id)->where('user_id',$user->id)->first();
+        $news = News::where('user_id',$user->id)->where('id',$id)->first();
 
         if (!$news) {
             return response()->json([

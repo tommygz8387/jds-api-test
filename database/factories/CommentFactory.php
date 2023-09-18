@@ -19,7 +19,7 @@ class CommentFactory extends Factory
         return [
             'content' => fake()->sentence(16),
             'user_id' => fake()->randomDigitNotNull(),
-            'news_id' => fake()->randomDigitNotNull(),
+            'news_id' => fake()->numberBetween(1,20),
         ];
     }
 }

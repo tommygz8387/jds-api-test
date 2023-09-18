@@ -5,14 +5,11 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\User;
 use Database\Seeders\UserSeeder;
-
-use function PHPUnit\Framework\assertNotNull;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UserTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
+    use RefreshDatabase;
     public function testRegisterSuccess(): void
     {
         $this->post('/api/users/register',[

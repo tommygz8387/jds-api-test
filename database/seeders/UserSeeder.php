@@ -17,7 +17,8 @@ class UserSeeder extends Seeder
             'name' => 'toms',
             'email' => 'toms@mail.com',
             'password' => Hash::make('password'),
-            'remember_token' => 'test'
+            'remember_token' => 'test',
+            'role' => 'admin'
         ]);
     }
 }

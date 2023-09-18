@@ -25,7 +25,15 @@ class CommentController extends Controller
     {
         $user = Auth::user();
         $comment = Comment::where('user_id',$user->id)
-        ->with(['author','posted'])->paginate(10);
+        ->with('posted')->paginate(10);
+
+        if ($comment->count()==0) {
+            return response()->json([
+                'data' => [
+                    'no comment posted'
+                ]
+            ])->setStatusCode(404);
+        }
         return CommentResource::collection($comment);
     }
 
@@ -47,7 +55,7 @@ class CommentController extends Controller
     public function show(String $id)
     {
         $user = Auth::user();
-        $comment = Comment::where('user_id',$user->id)->with('author')->find($id);
+        $comment = Comment::where('user_id',$user->id)->with('posted')->find($id);
         if (!$comment) {
             return response()->json([
                 'errors' => [

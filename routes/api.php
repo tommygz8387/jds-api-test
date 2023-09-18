@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PublicController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Controllers\AuthController;
@@ -18,7 +19,10 @@ use App\Http\Controllers\CommentController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+Route::controller(PublicController::class)->prefix('public')->group(function () {
+    Route::get('/', 'getNews');
+    Route::get('/detail/{id}', 'getNewsDetail');
+});;
 Route::controller(AuthController::class)->prefix('users')->group(function () {
     Route::post('register', 'register');
     Route::post('login', 'login');
@@ -28,11 +32,8 @@ Route::middleware(ApiAuthMiddleware::class)->controller(UserController::class)
 ->prefix('users')->group(function () {
     Route::patch('current', 'update');
     Route::get('current', 'getUser');
-    Route::get('current/{id}', 'getUserById');
 });
 Route::middleware(ApiAuthMiddleware::class)->group(function () {
-    Route::get('news/withComments', [NewsController::class,'getNewsWithComments']);
-    Route::get('news/logged', [NewsController::class,'getMyNews']);
     Route::apiResource('news', NewsController::class)->middleware(RoleMiddleware::class);
     Route::apiResource('comment', CommentController::class);
 });
