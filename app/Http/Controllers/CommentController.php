@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Comment;
 use App\Services\CommentService;
 use Illuminate\Http\JsonResponse;
+use App\Exceptions\ifExistException;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\CommentResource;
 use App\Http\Requests\CommentCreateRequest;
@@ -19,18 +19,17 @@ class CommentController extends Controller
         $this->commentService = $commentService;
     }
     /**
-     * Display a listing of the resource.
+     * Display a list of logged comment.
      */
     public function index()
     {
-        $user = Auth::user();
-        $comment = Comment::where('user_id',$user->id)
-        ->with('posted')->paginate(10);
-
-        if ($comment->count()==0) {
+        try{
+            $user = Auth::user();
+            $comment = $this->commentService->index($user);
+        }catch(ifExistException $e){
             return response()->json([
                 'data' => [
-                    'no comment posted'
+                    $e->getMessage()
                 ]
             ])->setStatusCode(404);
         }
@@ -38,7 +37,7 @@ class CommentController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created comment in storage.
      */
     public function store(CommentCreateRequest $request)
     {
@@ -50,17 +49,18 @@ class CommentController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified comment.
      */
     public function show(String $id)
     {
-        $user = Auth::user();
-        $comment = Comment::where('user_id',$user->id)->with('posted')->find($id);
-        if (!$comment) {
+        try{
+            $user = Auth::user();
+            $comment = $this->commentService->show($user,$id);
+        }catch(ifExistException $e){
             return response()->json([
                 'errors' => [
                     'message'=>[
-                        'comment not found'
+                        $e->getMessage()
                     ]
                 ]
             ])->setStatusCode(404);
@@ -69,36 +69,42 @@ class CommentController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified comment in storage.
      */
     public function update(CommentUpdateRequest $request, int $id) : JsonResponse
     {
-        $data = $request->validated();
-        
-        $update = $this->commentService->update($data,$id);
-
-        return (new CommentResource($update))->response()->setStatusCode(200);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $id)
-    {
-        $user = Auth::user();
-        $comment = Comment::where('id',$id)->where('user_id',$user->id)->first();
-
-        if (!$comment) {
+        try{
+            $data = $request->validated();
+            $update = $this->commentService->update($data,$id);
+        }catch(ifExistException $e){
             return response()->json([
                 'errors' => [
                     'message'=>[
-                        'comment not found'
+                        $e->getMessage()
                     ]
                 ]
             ])->setStatusCode(404);
         }
+        return (new CommentResource($update))->response()->setStatusCode(200);
+    }
 
-        $comment->delete();
+    /**
+     * Remove the specified comment from storage.
+     */
+    public function destroy(String $id)
+    {
+        try{
+            $user = Auth::user();
+            $this->commentService->delete($user,$id);
+        }catch(ifExistException $e){
+            return response()->json([
+                'errors' => [
+                    'message'=>[
+                        $e->getMessage()
+                    ]
+                ]
+            ])->setStatusCode(404);
+        }
         return response()->json([
             'data' => true
         ]);

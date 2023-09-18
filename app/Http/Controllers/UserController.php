@@ -18,7 +18,7 @@ class UserController extends Controller
     {
         $this->userService = $userService;
     }
-    public function getUser(Request $request): UserResource
+    public function getUser(): UserResource
     {
         $user = Auth::user();
         return new UserResource($user);

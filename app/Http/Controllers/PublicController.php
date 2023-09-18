@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\News;
+use App\Models\User;
 use App\Http\Resources\NewsResource;
+use App\Http\Resources\PublicUserResource;
 
 class PublicController extends Controller
 {
@@ -19,7 +21,11 @@ class PublicController extends Controller
     public function getNewsDetail(String $id)
     {
         $news = News::where('id',$id)->with(['author','comments'])->get();
-        dd($news);
-        return (new NewsResource($news))->response()->setStatusCode(200);
+        return NewsResource::collection($news);
+    }
+    public function getUserProfile(String $id)
+    {
+        $user = User::where('id',$id)->with(['mypost','mycomments'])->get();
+        return PublicUserResource::collection($user);
     }
 }

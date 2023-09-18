@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\News;
 use App\Services\NewsService;
 use Illuminate\Http\JsonResponse;
+use App\Exceptions\ifExistException;
 use App\Http\Resources\NewsResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\NewsCreateRequest;
@@ -19,17 +20,17 @@ class NewsController extends Controller
         $this->newsService = $newsService;
     }
     /**
-     * Display a listing of the resource.
+     * Display logged news list.
      */
     public function index()
     {
-        $user = Auth::user();
-        $news = News::where('user_id',$user->id)->paginate(10);
-        
-        if ($news->count()==0) {
+        try{
+            $user = Auth::user();
+            $news = $this->newsService->index($user);
+        }catch(ifExistException $e){
             return response()->json([
                 'data' => [
-                    'no news posted'
+                    $e->getMessage()
                 ]
             ])->setStatusCode(404);
         }
@@ -37,7 +38,7 @@ class NewsController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create news by logged user.
      */
     public function store(NewsCreateRequest $request) : NewsResource
     {
@@ -49,17 +50,18 @@ class NewsController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display logged news by id + comments.
      */
     public function show(String $id) : JsonResponse
     {
-        $user = Auth::user();
-        $news = News::where('user_id',$user->id)->with('comments')->find($id);
-        if (!$news) {
+        try{
+            $user = Auth::user();
+            $news = $this->newsService->show($user,$id);
+        }catch(ifExistException $e){
             return response()->json([
                 'errors' => [
                     'message'=>[
-                        'news not found'
+                        $e->getMessage()
                     ]
                 ]
             ])->setStatusCode(404);
@@ -68,36 +70,44 @@ class NewsController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified news in storage.
      */
     public function update(NewsUpdateRequest $request, String $id) : JsonResponse
     {
-        $data = $request->validated();
+        try{
+            $data = $request->validated();
+            $update = $this->newsService->update($data,$id);
+        }catch(ifExistException $e){
+            return response()->json([
+                'errors' => [
+                    'message'=>[
+                        $e->getMessage()
+                    ]
+                ]
+            ])->setStatusCode(404);
+        }
         
-        $update = $this->newsService->update($data,$id);
 
         return (new NewsResource($update))->response()->setStatusCode(200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified news from storage.
      */
     public function destroy(String $id) : JsonResponse
     {
-        $user = Auth::user();
-        $news = News::where('user_id',$user->id)->where('id',$id)->first();
-
-        if (!$news) {
+        try{
+            $user = Auth::user();
+            $this->newsService->delete($user,$id);
+        }catch(ifExistException $e){
             return response()->json([
                 'errors' => [
                     'message'=>[
-                        'news not found'
+                        $e->getMessage()
                     ]
                 ]
             ])->setStatusCode(404);
         }
-
-        $news->delete();
         return response()->json([
             'data' => true
         ]);

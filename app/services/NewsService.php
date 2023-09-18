@@ -5,12 +5,23 @@ namespace App\Services;
 use Carbon\Carbon;
 use App\Models\News;
 use Illuminate\Support\Str;
+use App\Exceptions\ifExistException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 
 
 class NewsService
 {
+    public function index($data)
+    {
+        $news = News::where('user_id',$data->id)->paginate(10);
+        
+        if ($news->count()==0) {
+            throw new ifExistException('no news posted');
+        }
+
+        return $news;
+    }
     public function store($data)
     {
         $author = Auth::user();
@@ -27,16 +38,23 @@ class NewsService
         return $news;
     }
 
+    public function show($data,$id)
+    {
+        $news = News::where('user_id',$data->id)->with('comments')->find($id);
+        if (!$news) {
+            throw new ifExistException('news not found');
+        }
+
+        return $news;
+    }
+
     public function update($data,$id)
     {
         $user = Auth::user();
         $data = array_filter($data);
         $news = News::where('id',$id)->where('user_id',$user->id)->first();
-        // dd($news);
-        if ($news==null) {
-            return 'ok';
-        // }else{
-        //     return 'ga oke';
+        if (!$news) {
+            throw new ifExistException('news not found');
         }
 
         if (isset($data['photo'])) {
@@ -58,10 +76,20 @@ class NewsService
         }else{
             $input = $data;
         }
-
-
         $update = News::updateOrCreate(['id'=>$id],$input);
 
         return $update;
+    }
+
+    public function delete($data,$id)
+    {
+        $news = News::where('id',$id)->where('user_id',$data->id)->first();
+
+        if (!$news) {
+            throw new ifExistException('news not found');
+        }
+
+        $news->delete();
+        return $news;
     }
 }

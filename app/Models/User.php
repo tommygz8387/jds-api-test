@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\News;
+use App\Models\Comment;
 use Illuminate\Validation\Rule;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -58,7 +59,7 @@ class User extends Authenticatable
         return [
             'role' => [
                 'required',
-                Rule::in(self::getRoleEnumValues()), // Validasi bahwa nilai harus ada dalam enum
+                Rule::in(self::getRoleEnumValues()),
             ],
         ];
     }

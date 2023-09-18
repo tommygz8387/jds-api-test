@@ -18,9 +18,15 @@ class PublicUserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'role' => $this->role,
             'created_at' => $this->created_at,
-            'comments' => $this->whenLoaded('comments', function(){
-                return $this->comments->map(function($comment){
+            'news' => $this->whenLoaded('mypost', function(){
+                return $this->mypost->map(function($news){
+                    return new NewsResource($news);
+                });
+            }),
+            'comment' => $this->whenLoaded('mycomments', function(){
+                return $this->mycomments->map(function($comment){
                     return new CommentResource($comment);
                 });
             })

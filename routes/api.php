@@ -22,6 +22,7 @@ use App\Http\Controllers\CommentController;
 Route::controller(PublicController::class)->prefix('public')->group(function () {
     Route::get('/', 'getNews');
     Route::get('/detail/{id}', 'getNewsDetail');
+    Route::get('/user/detail/{id}', 'getUserProfile');
 });;
 Route::controller(AuthController::class)->prefix('users')->group(function () {
     Route::post('register', 'register');
