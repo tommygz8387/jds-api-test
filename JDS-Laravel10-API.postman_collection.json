@@ -7,7 +7,77 @@
 	},
 	"item": [
 		{
-			"name": "Auth",
+			"name": "Public",
+			"item": [
+				{
+					"name": "Get all news",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/public?page=2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"public"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get news by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/public/detail/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"public",
+								"detail",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/public/user/detail/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"public",
+								"user",
+								"detail",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
 			"item": [
 				{
 					"name": "Register",
@@ -66,67 +136,13 @@
 					"response": []
 				},
 				{
-					"name": "Logout",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/users/logout",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"logout"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"auth": {
-				"type": "bearer",
-				"bearer": [
-					{
-						"key": "token",
-						"value": "8b8be598-9902-492b-bec7-3648929c672e",
-						"type": "string"
-					}
-				]
-			},
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				}
-			]
-		},
-		{
-			"name": "User",
-			"item": [
-				{
 					"name": "Update user",
 					"request": {
 						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"password\": \"password\",\r\n    \"role\": 0\r\n}",
+							"raw": "{\r\n    \"role\": \"admin\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -167,20 +183,19 @@
 					"response": []
 				},
 				{
-					"name": "Get user by id",
+					"name": "Logout",
 					"request": {
-						"method": "GET",
+						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/users/current/45",
+							"raw": "{{base_url}}/api/users/logout",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"users",
-								"current",
-								"45"
+								"logout"
 							]
 						}
 					},
@@ -192,7 +207,7 @@
 			"name": "News",
 			"item": [
 				{
-					"name": "Get news list",
+					"name": "Get my news list",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -210,45 +225,7 @@
 					"response": []
 				},
 				{
-					"name": "Get news list with comment",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/news/withComments",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"news",
-								"withComments"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get logged news list",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/news/logged",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"news",
-								"logged"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get news list by id",
+					"name": "Get my news by id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -282,7 +259,7 @@
 								{
 									"key": "photo",
 									"type": "file",
-									"src": "/F:/bckp/picture/Numix Circle For Windows/PNG/0ad.png"
+									"src": "/F:/bckp/picture/Numix Circle For Windows/PNG/3Depict.png"
 								},
 								{
 									"key": "content",
@@ -317,7 +294,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\":\"ini judul\",\r\n    \"content\":\"ini isi aksdjkashdkuahsdkhasjdhasjhd\"\r\n}",
+							"raw": "{\r\n    \"title\":\"ini judul\",\r\n    \"content\":\"ini isi xxxxxxxxxxxxxxxxxxxxxxxxx\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -344,14 +321,14 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/news/7",
+							"raw": "{{base_url}}/api/news/6",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"news",
-								"7"
+								"6"
 							]
 						}
 					},
@@ -386,14 +363,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/comment/1",
+							"raw": "{{base_url}}/api/comment/25",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"comment",
-								"1"
+								"25"
 							]
 						}
 					},
@@ -433,7 +410,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"content\":\"ini komen baru aksdjkashdkuahsdkhasjdhasjhd\"\r\n}",
+							"raw": "{\r\n    \"content\":\"ini komen baru aaaaaaaaaaaaaaaaaaaaaaaaaaa\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -441,14 +418,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/comment/1",
+							"raw": "{{base_url}}/api/comment/25",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"comment",
-								"1"
+								"25"
 							]
 						}
 					},
@@ -460,14 +437,14 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/comment/3",
+							"raw": "{{base_url}}/api/comment/25",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"comment",
-								"3"
+								"25"
 							]
 						}
 					},
@@ -481,7 +458,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "f73b537d-433a-4851-a782-111c0b18b42e",
+				"value": "{{token}}",
 				"type": "string"
 			}
 		]
@@ -510,6 +487,11 @@
 		{
 			"key": "base_url",
 			"value": "localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "xNOGqFuOjxV7ZsEC9l36",
 			"type": "string"
 		}
 	]
