@@ -32,7 +32,7 @@ class NewsTest extends TestCase
         $news = News::where('title','ini contoh judul')->first();
         self::assertNotNull($news->photo);
     }
-    public function testCreateUnauthorized(): void
+    public function testCreateNewsUnauthorized(): void
     {
         $this->seed(UserSeeder::class);
         $this->post('/api/news',[
@@ -52,7 +52,39 @@ class NewsTest extends TestCase
         ]);
     }
 
-    public function testGetNewsSuccess(): void
+    public function testGetMyNewsListSuccess(): void
+    {
+        $this->seed([UserSeeder::class,NewsSeeder::class]);
+        $this->get('/api/news/',[
+            'Authorization'=>'test'
+        ])
+        ->assertStatus(200)
+        ->assertJson([
+            'data'=>[
+                0=>[
+                    'title'=>'ini contoh judul',
+                    'photo'=> 'avatar.jpg',
+                    'content'=>'ini contoh content ajsdhkjahsdjahskdjhasd',
+                ]
+            ]
+        ]);
+    }
+    public function testGetMyNewsListUnauthorized(): void
+    {
+        $this->seed([UserSeeder::class,NewsSeeder::class]);
+        $this->get('/api/news/',[
+            'Authorization'=>'test2'
+        ])
+        ->assertStatus(401)
+        ->assertJson([
+            'errors'=>[
+                'message'=>[
+                    'unauthorized'
+                ]
+            ]
+        ]);
+    }
+    public function testGetMyNewsByIdSuccess(): void
     {
         $this->seed([UserSeeder::class,NewsSeeder::class]);
         $news = News::first();
@@ -68,7 +100,7 @@ class NewsTest extends TestCase
             ]
         ]);
     }
-    public function testGetNewsNotFound(): void
+    public function testGetMyNewsByIdNotFound(): void
     {
         $this->seed([UserSeeder::class,NewsSeeder::class]);
         $news = News::first();
@@ -85,7 +117,24 @@ class NewsTest extends TestCase
         ]);
     }
 
-    public function testUpdateTitleSuccess(): void
+    public function testGetMyNewsByIdUnauthorized(): void
+    {
+        $this->seed([UserSeeder::class,NewsSeeder::class]);
+        $news = News::first();
+        $this->get('/api/news/'.$news->id,[
+            'Authorization'=>'test2'
+        ])
+        ->assertStatus(401)
+        ->assertJson([
+            'errors'=>[
+                'message'=>[
+                    'unauthorized'
+                ]
+            ]
+        ]);
+    }
+
+    public function testUpdateNewsTitleSuccess(): void
     {
         $this->seed([UserSeeder::class,NewsSeeder::class]);
         $oldNews = News::first();
@@ -105,7 +154,7 @@ class NewsTest extends TestCase
         $newNews = News::where('title','ini contoh judul baru')->first();
         self::assertNotEquals($oldNews->title,$newNews->title);
     }
-    public function testUpdateContentSuccess(): void
+    public function testUpdateNewsContentSuccess(): void
     {
         $this->seed([UserSeeder::class,NewsSeeder::class]);
         $oldNews = News::first();
@@ -125,7 +174,7 @@ class NewsTest extends TestCase
         $newNews = News::where('title','ini contoh judul')->first();
         self::assertNotEquals($oldNews->content,$newNews->content);
     }
-    public function testUpdateUnauthorized(): void
+    public function testUpdateNewsUnauthorized(): void
     {
         $this->seed([UserSeeder::class,NewsSeeder::class]);
         $news = News::first();
@@ -143,7 +192,25 @@ class NewsTest extends TestCase
             ]
         ]);
     }
-    public function testDeleteSuccess(): void
+    public function testUpdateNewsNotFound(): void
+    {
+        $this->seed([UserSeeder::class,NewsSeeder::class]);
+        $news = News::first();
+        $this->patch('/api/news/'.($news->id+1),[
+            'content'=>'ini contoh content baru',
+        ],[
+            'Authorization'=>'test'
+        ])
+        ->assertStatus(404)
+        ->assertJson([
+            'errors'=>[
+                'message'=>[
+                    'news not found'
+                ]
+            ]
+        ]);
+    }
+    public function testDeleteNewsSuccess(): void
     {
         $this->seed([UserSeeder::class,NewsSeeder::class]);
         $news = News::first();
@@ -155,7 +222,7 @@ class NewsTest extends TestCase
             'data'=>true
         ]);
     }
-    public function testDeleteNotFound(): void
+    public function testDeleteNewsNotFound(): void
     {
         $this->seed([UserSeeder::class,NewsSeeder::class]);
         $news = News::first();
@@ -171,7 +238,7 @@ class NewsTest extends TestCase
             ]
         ]);
     }
-    public function testDeleteUnauthorize(): void
+    public function testDeleteNewsUnauthorized(): void
     {
         $this->seed([UserSeeder::class,NewsSeeder::class]);
         $news = News::first();
